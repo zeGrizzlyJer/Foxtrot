@@ -7,7 +7,7 @@ public class PlayerInput : MonoBehaviour, IRequireCleanup
 {
     public GameControls input;
 
-    private void Start()
+    private void Awake()
     {
         GameManager.Instance.OnGameStateChanged += TogglePlayerInput;
         input = new GameControls();
@@ -49,10 +49,12 @@ public class PlayerInput : MonoBehaviour, IRequireCleanup
         if (GameManager.Instance.GameState == GameState.PLAY)
         {
             //Enable
+            input.Enable();
         }
         else
         {
             //Disable
+            input.Disable();
         }
     }
 

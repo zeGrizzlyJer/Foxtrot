@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -8,14 +9,19 @@ using UnityEngine.UI;
 
 public class ButtonFunctions : MonoBehaviour
 {
+    private bool hasGameStarted = false;
+
     #region UI Elements
     [SerializeField] Menu menu;
+    [SerializeField] TextMeshProUGUI scoreTxt;
+    [SerializeField] TextMeshProUGUI hiScoreTxt;
     [SerializeField] Button startBtn;
     [SerializeField] Button settingsBtn;
     [SerializeField] Button backBtn;
     [SerializeField] Button quitBtn;
     [SerializeField] Button resumeBtn;
     [SerializeField] Button menuBtn;
+    [SerializeField] Button pauseBtn;
     [SerializeField] Slider masterSlider;
     [SerializeField] Slider musicSlider;
     [SerializeField] Slider sfxSlider;
@@ -32,6 +38,14 @@ public class ButtonFunctions : MonoBehaviour
     {
         List<Button> buttons = new List<Button>();
 
+        if (scoreTxt)
+        {
+            scoreTxt.text = "SCORE: " + GameManager.Instance.Score;
+        }
+        if (hiScoreTxt)
+        {
+            hiScoreTxt.text = "HIGH SCORE: " + GameManager.Instance.HiScore;
+        }
         if (startBtn)
         {
             startBtn.onClick.AddListener(StartGame);
@@ -61,6 +75,11 @@ public class ButtonFunctions : MonoBehaviour
         {
             menuBtn.onClick.AddListener(GoToMenu);
             buttons.Add(menuBtn);
+        }
+        if (pauseBtn)
+        {
+            pauseBtn.onClick.AddListener(PauseGame);
+            buttons.Add(pauseBtn);
         }
         if (masterSlider)
         {
@@ -98,6 +117,19 @@ public class ButtonFunctions : MonoBehaviour
     {
         if (hoverSound) AudioManager.Instance.Play2DSFX(hoverSound);
     }
+    
+    private void PauseGame()
+    {
+        if (GameManager.Instance.GameState == GameState.PAUSE)
+        {
+            ResumeGame();
+        }
+        else
+        {
+            hasGameStarted = (GameManager.Instance.GameState == GameState.GAMESTART ? true : false);
+            GameManager.Instance.GameState = GameState.PAUSE;
+        }
+    }
 
     private void GoToMenu()
     {
@@ -123,7 +155,7 @@ public class ButtonFunctions : MonoBehaviour
     private void ResumeGame()
     {
         if (resumeSound) AudioManager.Instance.Play2DSFX(resumeSound);
-        GameManager.Instance.GameState = GameState.PLAY;
+        GameManager.Instance.GameState = (hasGameStarted ? GameState.GAMESTART : GameState.PLAY);
     }
 
     private void QuitGame()

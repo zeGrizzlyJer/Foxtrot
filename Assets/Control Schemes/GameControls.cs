@@ -56,24 +56,55 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             ""id"": ""48fafe5a-022a-47ac-8006-f3e037a7179b"",
             ""actions"": [
                 {
-                    ""name"": ""New action"",
+                    ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""222e11c4-2893-4075-b43c-4d9e1f416782"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScreenGrab"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""81ae0bc6-27d1-406f-beaa-acd86e884560"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""500f3095-7204-4efc-b2d2-5221f40b5ad7"",
-                    ""path"": """",
+                    ""id"": ""46fce1c1-245f-4e99-bc70-b8ff1d6b4f33"",
+                    ""path"": ""<Touchscreen>/Press"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""New action"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""500f3095-7204-4efc-b2d2-5221f40b5ad7"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e6d1b92e-a68f-4469-8933-1ce853c54fe3"",
+                    ""path"": ""<Touchscreen>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScreenGrab"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -87,7 +118,8 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Pause_Activate = m_Pause.FindAction("Activate", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Newaction = m_Player.FindAction("New action", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_ScreenGrab = m_Player.FindAction("ScreenGrab", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -195,12 +227,14 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Newaction;
+    private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_ScreenGrab;
     public struct PlayerActions
     {
         private @GameControls m_Wrapper;
         public PlayerActions(@GameControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Newaction => m_Wrapper.m_Player_Newaction;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @ScreenGrab => m_Wrapper.m_Player_ScreenGrab;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -210,16 +244,22 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
-            @Newaction.started += instance.OnNewaction;
-            @Newaction.performed += instance.OnNewaction;
-            @Newaction.canceled += instance.OnNewaction;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+            @ScreenGrab.started += instance.OnScreenGrab;
+            @ScreenGrab.performed += instance.OnScreenGrab;
+            @ScreenGrab.canceled += instance.OnScreenGrab;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
         {
-            @Newaction.started -= instance.OnNewaction;
-            @Newaction.performed -= instance.OnNewaction;
-            @Newaction.canceled -= instance.OnNewaction;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+            @ScreenGrab.started -= instance.OnScreenGrab;
+            @ScreenGrab.performed -= instance.OnScreenGrab;
+            @ScreenGrab.canceled -= instance.OnScreenGrab;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -243,6 +283,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     }
     public interface IPlayerActions
     {
-        void OnNewaction(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
+        void OnScreenGrab(InputAction.CallbackContext context);
     }
 }

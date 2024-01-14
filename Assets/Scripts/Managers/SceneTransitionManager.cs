@@ -24,6 +24,7 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
 
     private void OnSceneLoad(Scene scene, LoadSceneMode mode)
     {
+        GameManager.Instance.HiScore = GameManager.Instance.Score;
         StartCoroutine(FadeOut());
         DetermineGameState();
     }
@@ -50,13 +51,12 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
                 GameManager.Instance.GameState = GameState.MAINMENU;
                 break;
             case 1:
-                GameManager.Instance.GameState = GameState.PLAY;
+                GameManager.Instance.GameState = GameState.GAMESTART;
                 break;
             case 2:
-                GameManager.Instance.GameState = GameState.WIN;
+                GameManager.Instance.GameState = GameState.END;
                 break;
-            case 3:
-                GameManager.Instance.GameState = GameState.LOSE;
+            default:
                 break;
         }
     }
@@ -95,6 +95,9 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
 
         if (SceneManager.GetActiveScene().buildIndex == 1)
         {
+            GameManager.Instance.Score = 0;
+            GameManager.Instance.Lives = 3;
+            GameManager.Instance.gameSpeed = GameManager.START_SPEED;
             DetermineGameState();
         }
     }
