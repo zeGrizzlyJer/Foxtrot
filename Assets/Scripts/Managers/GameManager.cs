@@ -69,6 +69,7 @@ public class GameManager : Singleton<GameManager>
             OnHiScoreChanged?.Invoke();
         }
     }
+
     private int score = 0;
     public int Score
     {

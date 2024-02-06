@@ -10,6 +10,7 @@ public enum MenuState
 {
     MAIN,
     SETTINGS,
+    SHOP,
 }
 
 public class Menu : MonoBehaviour, IRequireCleanup
@@ -25,6 +26,7 @@ public class Menu : MonoBehaviour, IRequireCleanup
         set
         {
             if (menuState == value) return;
+            if (value == MenuState.SETTINGS || menuState == MenuState.SETTINGS) fade = true;
             menuState = value;
             OnMenuStateChanged?.Invoke();
         }
@@ -39,6 +41,7 @@ public class Menu : MonoBehaviour, IRequireCleanup
     [SerializeField] private CanvasGroup settingsMenu;
 
     public event Action OnMenuStateChanged;
+    [HideInInspector] public bool fade = false;
 
     private void Awake()
     {
@@ -65,11 +68,12 @@ public class Menu : MonoBehaviour, IRequireCleanup
 
     private void SwapMenu()
     {
+        if (!fade) return; 
         if (MenuState == MenuState.MAIN)
         {
             StartCoroutine(FadeBetween(settingsMenu, primaryMenu));
         }
-        else
+        else if (MenuState == MenuState.SETTINGS)
         {
             StartCoroutine(FadeBetween(primaryMenu, settingsMenu));
         }
@@ -104,6 +108,7 @@ public class Menu : MonoBehaviour, IRequireCleanup
         }
         next.alpha = 1f;
         next.interactable = true;
+        fade = false;
     }
 
     private void Pause()

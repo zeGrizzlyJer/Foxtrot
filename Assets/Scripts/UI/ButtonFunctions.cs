@@ -13,15 +13,28 @@ public class ButtonFunctions : MonoBehaviour
 
     #region UI Elements
     [SerializeField] Menu menu;
+    [SerializeField] ShopManager shop;
+    [Header("Dynamic Text Objects")]
     [SerializeField] TextMeshProUGUI scoreTxt;
     [SerializeField] TextMeshProUGUI hiScoreTxt;
+
+    [Header("Button Objects")]
     [SerializeField] Button startBtn;
     [SerializeField] Button settingsBtn;
-    [SerializeField] Button backBtn;
+    [SerializeField] Button settigsBackBtn;
     [SerializeField] Button quitBtn;
     [SerializeField] Button resumeBtn;
     [SerializeField] Button menuBtn;
     [SerializeField] Button pauseBtn;
+    [SerializeField] Button shopBtn;
+    [SerializeField] Button shopBackBtn;
+    [SerializeField] Button playerToggleBtn;
+    [SerializeField] Button terrainToggleBtn;
+    [SerializeField] Button enemyToggleBtn;
+    [SerializeField] Button nextShopIconBtn;
+    [SerializeField] Button previousShopIconBtn;
+
+    [Header("Slider Objects")]
     [SerializeField] Slider masterSlider;
     [SerializeField] Slider musicSlider;
     [SerializeField] Slider sfxSlider;
@@ -56,10 +69,10 @@ public class ButtonFunctions : MonoBehaviour
             settingsBtn.onClick.AddListener(OpenSettings);
             buttons.Add(settingsBtn);
         }
-        if (backBtn)
+        if (settigsBackBtn)
         {
-            backBtn.onClick.AddListener(OpenMenu);
-            buttons.Add(backBtn);
+            settigsBackBtn.onClick.AddListener(OpenMenu);
+            buttons.Add(settigsBackBtn);
         }
         if (quitBtn)
         {
@@ -81,6 +94,46 @@ public class ButtonFunctions : MonoBehaviour
             pauseBtn.onClick.AddListener(PauseGame);
             buttons.Add(pauseBtn);
         }
+        if (shopBtn)
+        {
+            shopBtn.onClick.AddListener(OpenShop);
+            buttons.Add(shopBtn);
+        }
+        if (shopBackBtn)
+        {
+            shopBackBtn.onClick.AddListener(OpenMenu);
+            buttons.Add(shopBackBtn);
+        }
+        if (playerToggleBtn)
+        {
+            playerToggleBtn.onClick.AddListener(() => ChangeShopState(ShopState.PLAYER));
+            playerToggleBtn.onClick.AddListener(DetermineShopButtonState);
+            buttons.Add(playerToggleBtn);
+        }
+        if (terrainToggleBtn)
+        {
+            terrainToggleBtn.onClick.AddListener(() => ChangeShopState(ShopState.TERRAIN));
+            terrainToggleBtn.onClick.AddListener(DetermineShopButtonState);
+            buttons.Add(terrainToggleBtn);
+        }
+        if (enemyToggleBtn)
+        {
+            enemyToggleBtn.onClick.AddListener(() => ChangeShopState(ShopState.ENEMIES));
+            enemyToggleBtn.onClick.AddListener(DetermineShopButtonState);
+            buttons.Add(enemyToggleBtn);
+        }
+        if(nextShopIconBtn)
+        {
+            nextShopIconBtn.onClick.AddListener(() => IncrementShopIndex(1));
+            buttons.Add(nextShopIconBtn);
+        }
+        if(previousShopIconBtn)
+        {
+            previousShopIconBtn.onClick.AddListener(() => IncrementShopIndex(-1));
+            buttons.Add(previousShopIconBtn);
+        }
+
+
         if (masterSlider)
         {
             masterSlider.onValueChanged.AddListener(MasterVolumeCallback);
@@ -111,6 +164,8 @@ public class ButtonFunctions : MonoBehaviour
             entry.callback.AddListener((data) => { OnButtonHovered(); });
             trigger.triggers.Add(entry);
         }
+
+        DetermineShopButtonState();
     }
 
     public void OnButtonHovered()
@@ -118,6 +173,29 @@ public class ButtonFunctions : MonoBehaviour
         if (hoverSound) AudioManager.Instance.Play2DSFX(hoverSound);
     }
     
+    private void IncrementShopIndex(int i)
+    {
+        shop.SpriteIndex += i;
+    }
+
+    private void DetermineShopButtonState()
+    {
+        if (playerToggleBtn) playerToggleBtn.interactable = (shop.State != ShopState.PLAYER);
+        if (terrainToggleBtn) terrainToggleBtn.interactable = (shop.State != ShopState.TERRAIN);
+        if (enemyToggleBtn) enemyToggleBtn.interactable = (shop.State != ShopState.ENEMIES);
+    }
+
+    private void ChangeShopState(ShopState state)
+    {
+        shop.State = state;
+    }
+
+    private void OpenShop()
+    {
+        if (clickSound) AudioManager.Instance.Play2DSFX(clickSound);
+        menu.MenuState = MenuState.SHOP;
+    }
+
     private void PauseGame()
     {
         if (GameManager.Instance.GameState == GameState.PAUSE)
