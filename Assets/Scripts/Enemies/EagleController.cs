@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class EagleController : EntityController, IRequireCleanup, IEagle
+public class EagleController : EntityController, IRequireCleanup, ISpawn
 {
     private Rigidbody2D rb;
-    private EagleSpawner spawner;
+    private ISpawner spawner;
     private EagleAnim eAnim;
     private GameObject player;
     [SerializeField] private AnimationClip injureClip;
@@ -14,7 +14,7 @@ public class EagleController : EntityController, IRequireCleanup, IEagle
     [SerializeField] private float verticalSpeed = 3f;
     [SerializeField] private float horizontalSpeedRate = 0.5f;
     [SerializeField] private float despawnPoint = -10f;
-    [SerializeField] private int defeatValue = 1000;
+    [SerializeField] private int defeatValue = 3;
 
     private void Start()
     {
@@ -44,20 +44,20 @@ public class EagleController : EntityController, IRequireCleanup, IEagle
     protected override void Idle()
     {
         Debug.Log("Idle");
-        rb.velocity = Vector3.zero;
+        rb.velocity = Vector2.zero;
         eAnim.Idle();
     }
 
     protected override void Run()
     {
-        Vector3 direction;
+        Vector2 direction;
 
         if (player.transform.position.y > transform.position.y)
-            direction = new Vector3(-GameManager.Instance.gameSpeed * horizontalSpeedRate, verticalSpeed, 0f);
+            direction = new Vector2(-GameManager.Instance.gameSpeed * horizontalSpeedRate, verticalSpeed);
         else if (player.transform.position.y < transform.position.y)
-            direction = new Vector3(-GameManager.Instance.gameSpeed * horizontalSpeedRate, -verticalSpeed, 0f);
+            direction = new Vector2(-GameManager.Instance.gameSpeed * horizontalSpeedRate, -verticalSpeed);
         else
-            direction = new Vector3(-GameManager.Instance.gameSpeed * horizontalSpeedRate, 0f, 0f);
+            direction = new Vector2(-GameManager.Instance.gameSpeed * horizontalSpeedRate, 0f);
 
         rb.velocity = direction;
         if (transform.position.x <= despawnPoint) Despawn();
@@ -66,11 +66,11 @@ public class EagleController : EntityController, IRequireCleanup, IEagle
 
     protected override void Injured()
     {
-        rb.velocity = Vector3.zero;
+        rb.velocity = Vector2.zero;
         eAnim.Injured();
     }
 
-    public void Spawn(Vector3 pos)
+    public void Spawn(Vector2 pos)
     {
         transform.position = pos;
         gameObject.SetActive(true);
@@ -81,10 +81,10 @@ public class EagleController : EntityController, IRequireCleanup, IEagle
     public void Despawn()
     {
         gameObject.SetActive(false);
-        spawner.ReturnEagle(this);
+        spawner.ReturnObject(this);
     }
 
-    public void AssignSpawner(EagleSpawner s)
+    public void AssignSpawner(ISpawner s)
     {
         spawner = s;
         player = GameObject.FindGameObjectWithTag("Player");
@@ -114,12 +114,12 @@ public class EagleController : EntityController, IRequireCleanup, IEagle
     }
 
     #region Cleanup
-    public void OnCleanup()
+    public void OnDisable()
     {
-        if (!GameManager.cleanedUp) OnDisable();
+        if (!GameManager.cleanedUp) OnCleanup();
     }
 
-    public void OnDisable()
+    public void OnCleanup()
     {
         Debug.Log($"{name}: Unsubscribing in progress...");
         GameManager.Instance.OnGameStateChanged -= DetermineEntityState;

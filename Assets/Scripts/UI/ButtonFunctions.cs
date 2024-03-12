@@ -17,11 +17,13 @@ public class ButtonFunctions : MonoBehaviour
     [Header("Dynamic Text Objects")]
     [SerializeField] TextMeshProUGUI scoreTxt;
     [SerializeField] TextMeshProUGUI hiScoreTxt;
+    [SerializeField] TextMeshProUGUI moneyTxt;
+    [SerializeField] TextMeshProUGUI costTxt;
 
     [Header("Button Objects")]
     [SerializeField] Button startBtn;
     [SerializeField] Button settingsBtn;
-    [SerializeField] Button settigsBackBtn;
+    [SerializeField] Button settingsBackBtn;
     [SerializeField] Button quitBtn;
     [SerializeField] Button resumeBtn;
     [SerializeField] Button menuBtn;
@@ -33,12 +35,14 @@ public class ButtonFunctions : MonoBehaviour
     [SerializeField] Button enemyToggleBtn;
     [SerializeField] Button nextShopIconBtn;
     [SerializeField] Button previousShopIconBtn;
+    [SerializeField] Button buyBtn;
 
     [Header("Slider Objects")]
     [SerializeField] Slider masterSlider;
     [SerializeField] Slider musicSlider;
     [SerializeField] Slider sfxSlider;
     #endregion
+
     #region SFX
     [SerializeField] AudioClip startGameSound;
     [SerializeField] AudioClip clickSound;
@@ -59,6 +63,14 @@ public class ButtonFunctions : MonoBehaviour
         {
             hiScoreTxt.text = "HIGH SCORE: " + GameManager.Instance.HiScore;
         }
+        if (moneyTxt)
+        {
+            moneyTxt.text = GameData.Money.ToString();
+        }
+        if (costTxt)
+        {
+            costTxt.text = "--";
+        }
         if (startBtn)
         {
             startBtn.onClick.AddListener(StartGame);
@@ -69,10 +81,10 @@ public class ButtonFunctions : MonoBehaviour
             settingsBtn.onClick.AddListener(OpenSettings);
             buttons.Add(settingsBtn);
         }
-        if (settigsBackBtn)
+        if (settingsBackBtn)
         {
-            settigsBackBtn.onClick.AddListener(OpenMenu);
-            buttons.Add(settigsBackBtn);
+            settingsBackBtn.onClick.AddListener(OpenMenu);
+            buttons.Add(settingsBackBtn);
         }
         if (quitBtn)
         {
@@ -132,7 +144,12 @@ public class ButtonFunctions : MonoBehaviour
             previousShopIconBtn.onClick.AddListener(() => IncrementShopIndex(-1));
             buttons.Add(previousShopIconBtn);
         }
-
+        if(buyBtn)
+        {
+            shop.OnSpriteIndexChange += DetermineBuyButtonState;
+            buyBtn.onClick.AddListener(BuyUnlockable);
+            buttons.Add(buyBtn);
+        }
 
         if (masterSlider)
         {
@@ -165,7 +182,7 @@ public class ButtonFunctions : MonoBehaviour
             trigger.triggers.Add(entry);
         }
 
-        DetermineShopButtonState();
+        if (shop) shop.OnShopStateChange += DetermineShopButtonState;
     }
 
     public void OnButtonHovered()
@@ -178,11 +195,31 @@ public class ButtonFunctions : MonoBehaviour
         shop.SpriteIndex += i;
     }
 
+    private void BuyUnlockable()
+    {
+        int currentMoney = GameData.Money;
+
+        List<PlayerUnlockData> data = GetCurrentDataList();
+        if (data[shop.SpriteIndex].cost <= currentMoney)
+        {
+            currentMoney -= data[shop.SpriteIndex].cost;
+            data[shop.SpriteIndex].isUnlocked = true;
+            DataManager.Instance.SaveData(data[shop.SpriteIndex]);
+            DetermineBuyButtonState();
+            moneyTxt.text = currentMoney.ToString();
+
+            GameData.Money = currentMoney;
+            PlayerPrefs.Save();
+        }
+
+    }
+
     private void DetermineShopButtonState()
     {
         if (playerToggleBtn) playerToggleBtn.interactable = (shop.State != ShopState.PLAYER);
         if (terrainToggleBtn) terrainToggleBtn.interactable = (shop.State != ShopState.TERRAIN);
         if (enemyToggleBtn) enemyToggleBtn.interactable = (shop.State != ShopState.ENEMIES);
+        DetermineBuyButtonState();
     }
 
     private void ChangeShopState(ShopState state)
@@ -209,6 +246,32 @@ public class ButtonFunctions : MonoBehaviour
         }
     }
 
+    private List<PlayerUnlockData> GetCurrentDataList()
+    {
+        List<PlayerUnlockData> data;
+        switch (shop.State)
+        {
+            case ShopState.PLAYER:
+                data = DataManager.Instance.characterUnlockData;
+                break;
+            case ShopState.TERRAIN:
+                data = DataManager.Instance.terrainUnlockData;
+                break;
+            case ShopState.ENEMIES:
+                data = DataManager.Instance.enemyUnlockData;
+                break;
+            default:
+                data = new List<PlayerUnlockData>();
+                break;
+        }
+        return data;
+    }
+
+    private void DetermineBuyButtonState()
+    {
+        List<PlayerUnlockData> data = GetCurrentDataList();
+        GetStateFromData(data);
+    }
     private void GoToMenu()
     {
         if (clickSound) AudioManager.Instance.Play2DSFX(clickSound);
@@ -261,5 +324,23 @@ public class ButtonFunctions : MonoBehaviour
     {
         if (startGameSound) AudioManager.Instance.Play2DSFX(startGameSound);
         SceneTransitionManager.Instance.LoadScene(1);
+    }
+
+    private void GetStateFromData(List<PlayerUnlockData> data)
+    {
+        Debug.Log(data[shop.SpriteIndex].name);
+        if (data[shop.SpriteIndex].isUnlocked)
+        {
+            buyBtn.interactable = false;
+            buyBtn.GetComponentInChildren<TextMeshProUGUI>().text = "OWNED";
+            costTxt.text = "--";
+        }
+        else
+        {
+            buyBtn.interactable = true;
+            buyBtn.GetComponentInChildren<TextMeshProUGUI>().text = "BUY";
+            costTxt.text = data[shop.SpriteIndex].cost.ToString();
+        }
+        shop.DetermineLockState();
     }
 }

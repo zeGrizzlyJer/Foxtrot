@@ -10,6 +10,7 @@ public class HUD : MonoBehaviour, IRequireCleanup
     public Button gameStartPanel;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI hiScoreText;
+    public TextMeshProUGUI moneyText;
     public float livesIconSize = 112f;
 
     private void Awake()
@@ -29,13 +30,18 @@ public class HUD : MonoBehaviour, IRequireCleanup
         }
         if (scoreText)
         {
-            scoreText.text = "SCORE: 0";
+            scoreText.text = "0";
             GameManager.Instance.OnScoreChanged += UpdateScoreText;
         }
         if (hiScoreText)
         {
             hiScoreText.text = "HIGH SCORE: " + GameManager.Instance.HiScore;
             GameManager.Instance.OnHiScoreChanged += UpdateHiScoreText;
+        }
+        if (moneyText)
+        {
+            moneyText.text = GameData.Money.ToString(); ;
+            GameManager.Instance.OnCurrencyChanged += UpdateMoneyText;
         }
     }
 
@@ -54,6 +60,7 @@ public class HUD : MonoBehaviour, IRequireCleanup
         if (gameStartPanel) GameManager.Instance.OnGameStateChanged -= EnablePanel;
         if (scoreText) GameManager.Instance.OnScoreChanged -= UpdateScoreText;
         if (hiScoreText) GameManager.Instance.OnHiScoreChanged -= UpdateHiScoreText;
+        if (moneyText) GameManager.Instance.OnCurrencyChanged -= UpdateMoneyText;
     }
     #endregion
 
@@ -78,10 +85,15 @@ public class HUD : MonoBehaviour, IRequireCleanup
 
     private void UpdateScoreText()
     {
-        scoreText.text = "SCORE: " + GameManager.Instance.Score;
+        scoreText.text = GameManager.Instance.Score.ToString();
     }
     private void UpdateHiScoreText()
     {
-        scoreText.text = "HIGH SCORE: " + GameManager.Instance.HiScore;
+        hiScoreText.text = "HIGH SCORE: " + GameManager.Instance.HiScore;
+    }
+
+    private void UpdateMoneyText()
+    {
+        moneyText.text = GameData.Money.ToString();
     }
 }

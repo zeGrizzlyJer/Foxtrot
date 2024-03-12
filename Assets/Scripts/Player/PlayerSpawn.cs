@@ -20,6 +20,7 @@ public class PlayerSpawn : MonoBehaviour
         if (GameManager.Instance.Lives <= 0)
         {
             GameManager.Instance.GameState = GameState.RESPAWN;
+            player.GetComponent<PlayerController>().DisableRB();
             SceneTransitionManager.Instance.LoadScene(2);
             return;
         }

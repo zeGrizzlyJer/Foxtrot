@@ -9,13 +9,19 @@ public class PlayerController : EntityController, IRequireCleanup
     private Rigidbody2D rb;
     private PlayerInput pInput;
     private PlayerAnim pAnim;
-    [SerializeField] private float jumpForce = 400f;
+    [SerializeField] private float initialJumpForce = 10f;
+    [SerializeField] private float finalJumpForce = 2f;
+    [SerializeField] private float maxFallSpeed = 15f;
+    [SerializeField] private float maxJumpTimer = 1f;
+    [SerializeField] private float gravityStrength = 30f;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Vector2 boxSize;
 
     public int maxJumps = 2;
     private bool isGrounded;
     private int jumps;
+    private bool isJumping;
+    private float jumpTimer = 0f;
 
     private void Awake()
     {
@@ -28,23 +34,28 @@ public class PlayerController : EntityController, IRequireCleanup
         rb = GetComponent<Rigidbody2D>();
         pInput = GetComponent<PlayerInput>();
         pAnim = GetComponentInChildren<PlayerAnim>();
-        pInput.input.Player.Jump.performed += ctx => StartJump(ctx);
+
+        Physics2D.gravity = new Vector2(0f, -gravityStrength);
+
+        pInput.input.Player.Jump.started += ctx => StartJump(ctx);
+        pInput.input.Player.Jump.canceled += ctx => EndJump(ctx);
         pInput.input.Player.ScreenGrab.performed += ctx => ScreenGrab(ctx);
     }
-
+    
     #region Cleanup
     public void OnDisable()
+    {
+        if (!GameManager.cleanedUp) OnCleanup();
+    }
+
+
+    public void OnCleanup()
     {
         Debug.Log($"{name}: Unsubscribing in progress...");
         pInput.input.Player.Jump.performed -= ctx => StartJump(ctx);
         pInput.input.Player.ScreenGrab.performed -= ctx => ScreenGrab(ctx);
         GameManager.Instance.OnGameStateChanged -= DeterminePlayerState;
         GameManager.Instance.OnApplicationCleanup -= OnCleanup;
-    }
-
-    public void OnCleanup()
-    {
-        if (!GameManager.cleanedUp) OnDisable();
     }
     #endregion
 
@@ -80,38 +91,32 @@ public class PlayerController : EntityController, IRequireCleanup
         pAnim.Run();
         CheckIfGrounded();
         if (isGrounded) return;
-        if (rb.velocity.y > 0.01f)
-        {
-            state = State.Jump;
-            return;
-        }
-        else if (rb.velocity.y < 0.01f)
-        {
-            state = State.Fall;
-            return;
-        }
+        /*        if (rb.velocity.y > 0.01f)
+                {
+                    state = State.Jump;
+                    return;
+                }*/
+        DetermineIfFalling();
     }
 
     protected override void Jump()
     {
         CheckIfGrounded();
         pAnim.Jump();
-        if (rb.velocity.y < 0.01f)
-        {
-            state = State.Fall;
-            return;
-        }
+        DetermineIfFalling();
+        UpdateJump();
     }
 
     protected override void Fall()
     {
         CheckIfGrounded();
         pAnim.Fall();
-        if (rb.velocity.y > 0.01f)
+        UpdateFalling();
+        /*if (rb.velocity.y > 0.01f)
         {
             state = State.Jump;
             return;
-        }
+        }*/
     }
 
     protected override void Injured()
@@ -123,14 +128,51 @@ public class PlayerController : EntityController, IRequireCleanup
     public void StartJump(InputAction.CallbackContext ctx)
     {
         if (jumps <= 0) return;
+
         jumps--;
-        rb.AddForce(new Vector3(0f, jumpForce, 0f));
+        state = State.Jump;
+        isJumping = true;
+        jumpTimer = 0f;
+        rb.velocity = new Vector2(0f, initialJumpForce);
         Debug.Log("Jumping");
+    }
+
+    public void EndJump(InputAction.CallbackContext ctx)
+    {
+        if (!isJumping) return;
+
+        isJumping = false;
+        rb.velocity = new Vector2(0f, finalJumpForce);
+        Debug.Log("End Jumping");
+    }
+
+    private void UpdateJump()
+    {
+        if (!isJumping) return;
+        if (jumpTimer > maxJumpTimer)
+        {
+            isJumping = false;
+            rb.velocity = new Vector2(0f, 0f);
+            return;
+        }
+
+        float t = jumpTimer / maxJumpTimer;
+        float jumpForce = Mathf.Lerp(initialJumpForce, finalJumpForce, t) * JumpCurve(t);
+
+        rb.velocity = new Vector2(0f, jumpForce);
+
+        jumpTimer += Time.deltaTime;
+    }
+
+    private float JumpCurve(float t)
+    {
+        return Mathf.Pow(1.5f, t);
     }
 
     public void Bounce()
     {
-        rb.AddForce(new Vector3(0f, jumpForce * 1.5f, 0f));
+        rb.velocity = new Vector2(0f, initialJumpForce * 1.2f);
+        state = State.Jump;
         Debug.Log("Bouncing");
     }
 
@@ -138,7 +180,7 @@ public class PlayerController : EntityController, IRequireCleanup
     {
         Collider2D groundCollider = Physics2D.OverlapBox(transform.position, boxSize, 0f, groundLayer);
 
-        if (groundCollider != null)
+        if (groundCollider != null && (state == State.Fall || state == State.Run))
         {
             Grounded();
             return;
@@ -146,6 +188,23 @@ public class PlayerController : EntityController, IRequireCleanup
         else
         {
             isGrounded = false;
+        }
+    }
+
+    private void DetermineIfFalling()
+    {
+        if (rb.velocity.y < -0.01f)
+        {
+            state = State.Fall;
+            return;
+        }
+    }
+
+    private void UpdateFalling()
+    {
+        if (rb.velocity.y < -maxFallSpeed)
+        {
+            rb.velocity = new Vector2(0, -maxFallSpeed);
         }
     }
 

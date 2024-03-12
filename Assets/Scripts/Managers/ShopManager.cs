@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,22 +22,23 @@ public class ShopManager : MonoBehaviour
         {
             if (value == state) return;
             state = value;
-            spriteIndex = 0;
+            SpriteIndex = 0;
             switch (state)
             {
                 case ShopState.PLAYER:
-                    targetSprite.sprite = playerSprites[spriteIndex];
+                    targetSprite.sprite = DataManager.Instance.characterUnlockData[spriteIndex].shopIcon;
                     break;
                 case ShopState.TERRAIN:
-                    targetSprite.sprite = terrainSprites[spriteIndex];
+                    targetSprite.sprite = DataManager.Instance.terrainUnlockData[spriteIndex].shopIcon;
                     break;
                 case ShopState.ENEMIES:
-                    targetSprite.sprite = enemySprites[spriteIndex];
+                    targetSprite.sprite = DataManager.Instance.enemyUnlockData[spriteIndex].shopIcon;
                     break;
                 default:
                     break;
             }
             DetermineMaxIndex();
+            OnShopStateChange?.Invoke();
         }
     }
 
@@ -60,8 +62,13 @@ public class ShopManager : MonoBehaviour
                 spriteIndex = value;
             }
             ChangeIconFromIndex();
+            DetermineLockState();
+            OnSpriteIndexChange?.Invoke();
         }
     }
+
+    public event Action OnSpriteIndexChange;
+    public event Action OnShopStateChange;
 
     int maxIndex = 0;
 
@@ -75,12 +82,8 @@ public class ShopManager : MonoBehaviour
     private Vector3 position;
     private Vector3 targetPosition;
 
-    [Header("Sprite Lists")]
     public Image targetSprite;
-    public List<Sprite> playerSprites = new List<Sprite>();
-    public List<Sprite> terrainSprites = new List<Sprite>();
-    public List<Sprite> enemySprites = new List<Sprite>();
-
+    public Image lockImage;
 
     private void Start()
     {
@@ -107,13 +110,13 @@ public class ShopManager : MonoBehaviour
         switch (state)
         {
             case ShopState.PLAYER:
-                targetSprite.sprite = playerSprites[spriteIndex];
+                targetSprite.sprite = DataManager.Instance.characterUnlockData[spriteIndex].shopIcon;
                 break;
             case ShopState.TERRAIN:
-                targetSprite.sprite = terrainSprites[spriteIndex];
+                targetSprite.sprite = DataManager.Instance.terrainUnlockData[spriteIndex].shopIcon;
                 break;
             case ShopState.ENEMIES:
-                targetSprite.sprite = enemySprites[spriteIndex];
+                targetSprite.sprite = DataManager.Instance.enemyUnlockData[spriteIndex].shopIcon;
                 break;
             default:
                 break;
@@ -125,13 +128,31 @@ public class ShopManager : MonoBehaviour
         switch (state)
         {
             case ShopState.PLAYER:
-                maxIndex = playerSprites.Count - 1;
+                maxIndex = DataManager.Instance.characterUnlockData.Count - 1;
                 break;
             case ShopState.TERRAIN:
-                maxIndex = terrainSprites.Count - 1;
+                maxIndex = DataManager.Instance.terrainUnlockData.Count - 1;
                 break;
             case ShopState.ENEMIES:
-                maxIndex = enemySprites.Count - 1;
+                maxIndex = DataManager.Instance.enemyUnlockData.Count - 1;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void DetermineLockState()
+    {
+        switch (state)
+        {
+            case ShopState.PLAYER:
+                lockImage.gameObject.SetActive(!DataManager.Instance.characterUnlockData[spriteIndex].isUnlocked);
+                break;
+            case ShopState.TERRAIN:
+                lockImage.gameObject.SetActive(!DataManager.Instance.terrainUnlockData[spriteIndex].isUnlocked);
+                break;
+            case ShopState.ENEMIES:
+                lockImage.gameObject.SetActive(!DataManager.Instance.enemyUnlockData[spriteIndex].isUnlocked);
                 break;
             default:
                 break;

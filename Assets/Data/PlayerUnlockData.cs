@@ -22,4 +22,5 @@ public class PlayerUnlockData : ScriptableObject
     public UnlockCondition condition;
     public bool isUnlocked = false;
     public Sprite shopIcon;
+    public int cost;    // If cost is -1, then it is a default asset
 }

@@ -16,5 +16,6 @@ MonoBehaviour:
   unlockName: TerrainSkin_03
   description: Third terrain skin
   condition: 3
-  isUnlocked: 1
+  isUnlocked: 0
   shopIcon: {fileID: -1814082123, guid: 507b90f0b760ab14fb1f2694db6b64ed, type: 3}
+  cost: 100

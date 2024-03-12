@@ -18,3 +18,4 @@ MonoBehaviour:
   condition: 3
   isUnlocked: 0
   shopIcon: {fileID: 867590019, guid: 96e4a68225ba67a459a2aa3a11429e03, type: 3}
+  cost: 200

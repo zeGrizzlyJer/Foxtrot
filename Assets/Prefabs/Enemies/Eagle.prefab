@@ -244,7 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   injureClip: {fileID: 7400000, guid: a7ddc68b362f52240854d126a17b4122, type: 2}
-  verticalSpeed: 1.5
+  verticalSpeed: 5
   horizontalSpeedRate: 0.5
   despawnPoint: -10
-  defeatValue: 1000
+  defeatValue: 3

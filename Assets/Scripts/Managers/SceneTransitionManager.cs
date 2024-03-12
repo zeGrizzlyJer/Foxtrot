@@ -45,20 +45,7 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
 
     public void DetermineGameState()
     {
-        switch (SceneManager.GetActiveScene().buildIndex)
-        {
-            case 0:
-                GameManager.Instance.GameState = GameState.MAINMENU;
-                break;
-            case 1:
-                GameManager.Instance.GameState = GameState.GAMESTART;
-                break;
-            case 2:
-                GameManager.Instance.GameState = GameState.END;
-                break;
-            default:
-                break;
-        }
+        GameManager.Instance.DetermineGameState();
     }
 
     private IEnumerator FadeIn(int scene)
@@ -96,8 +83,9 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
         if (SceneManager.GetActiveScene().buildIndex == 1)
         {
             GameManager.Instance.Score = 0;
-            GameManager.Instance.Lives = 3;
+            GameManager.Instance.Lives = GameManager.START_LIVES;
             GameManager.Instance.gameSpeed = GameManager.START_SPEED;
+            GameManager.Instance.timer = 0;
             DetermineGameState();
         }
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -17,9 +18,10 @@ public enum GameState
 public class GameManager : Singleton<GameManager>
 {
     #region Statics
-    public static float START_SPEED = 5f;
-    public static float GAME_ACCEL = 0.1f;
-    public static int SCORE_RATE = 2;
+    public static float START_SPEED = 8f;
+    public static float GAME_ACCEL = 0.025f;
+    public static int SCORE_RATE = 1;
+    public static int START_LIVES = 1;
     #endregion
 
     #region Properties
@@ -39,7 +41,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private int lives = 3;
+    private int lives = START_LIVES;
     public int Lives
     {
         get
@@ -65,7 +67,7 @@ public class GameManager : Singleton<GameManager>
         {
             if (hiScore >= value) return;
             hiScore = value;
-            PlayerPrefs.SetInt("Hiscore", hiScore);
+            GameData.HiScore = value;
             OnHiScoreChanged?.Invoke();
         }
     }
@@ -85,7 +87,25 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    private int money;
+
+    public int Money
+    {
+        get
+        {
+            return money;
+        }
+        set
+        {
+            if (money == value) return;
+            money = value;
+            GameData.Money = value;
+            OnCurrencyChanged?.Invoke();
+        }
+    }
+
     public float gameSpeed = START_SPEED;
+    [HideInInspector] public float timer = 0f;
     #endregion
 
     #region Cleanup
@@ -95,6 +115,7 @@ public class GameManager : Singleton<GameManager>
     private void OnApplicationQuit()
     {
         OnApplicationCleanup?.Invoke();
+        Debug.Log("Cleaning Up");
         cleanedUp = true;
     }
     #endregion
@@ -103,13 +124,20 @@ public class GameManager : Singleton<GameManager>
     public event Action OnLivesChanged;
     public event Action OnScoreChanged;
     public event Action OnHiScoreChanged;
+    public event Action OnCurrencyChanged;
 
     protected override void Awake()
     {
         base.Awake();
-        hiScore = PlayerPrefs.GetInt("Hiscore", 0);
+        HiScore = GameData.HiScore;
+        Money = GameData.Money;
         OnGameStateChanged += DetermineCursorState;
         OnGameStateChanged += SetTimeScale;
+    }
+
+    private void Start()
+    {
+        DetermineGameState();
     }
 
     private void Update()
@@ -118,7 +146,12 @@ public class GameManager : Singleton<GameManager>
         {
             case GameState.PLAY:
                 gameSpeed += GAME_ACCEL * Time.deltaTime;
-                Score += SCORE_RATE;
+                timer += Time.deltaTime;
+                if (timer > 1f)
+                {
+                    timer -= 1f;
+                    Score += SCORE_RATE;
+                }
                 break;
             default:
                 break;
@@ -126,6 +159,24 @@ public class GameManager : Singleton<GameManager>
     }
 
     #region GameStateChangeEffects
+    public void DetermineGameState()
+    {
+        switch (SceneManager.GetActiveScene().buildIndex)
+        {
+            case 0:
+                GameState = GameState.MAINMENU;
+                break;
+            case 1:
+                GameState = GameState.GAMESTART;
+                break;
+            case 2:
+                GameState = GameState.END;
+                break;
+            default:
+                break;
+        }
+    }
+
     private void SetTimeScale()
     {
         if (GameState != GameState.PAUSE) Time.timeScale = 1f;

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IEagle
+public class GemSpawner : Spawner<GemPickup>
 {
-    void Spawn(Vector3 pos);
 }
