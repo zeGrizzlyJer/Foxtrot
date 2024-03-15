@@ -8,11 +8,6 @@ public class DataManager : Singleton<DataManager>
     public List<PlayerUnlockData> enemyUnlockData = new List<PlayerUnlockData>();
     public List<PlayerUnlockData> terrainUnlockData = new List<PlayerUnlockData>();
 
-    private void Start()
-    {
-        
-    }
-
     public void LoadData(PlayerUnlockData data)
     {
         data.isUnlocked = PlayerPrefs.GetInt(data.unlockName, 0) == 1;

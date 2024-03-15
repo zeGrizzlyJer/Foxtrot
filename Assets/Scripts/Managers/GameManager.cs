@@ -22,6 +22,9 @@ public class GameManager : Singleton<GameManager>
     public static float GAME_ACCEL = 0.025f;
     public static int SCORE_RATE = 1;
     public static int START_LIVES = 1;
+    public static int REWARDS_MINIMUM = 2;
+    public static int REWARDS_MAXIMUM = 10;
+    public static int REWARDS_MULTIPLIER = 3;
     #endregion
 
     #region Properties
@@ -138,6 +141,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         DetermineGameState();
+        SceneTransitionManager.Instance.BeforeSceneChange += IncreaseRewards;
     }
 
     private void Update()
@@ -196,4 +200,15 @@ public class GameManager : Singleton<GameManager>
         }
     }
     #endregion
+
+    private void IncreaseRewards()
+    {
+        if (SceneManager.GetActiveScene().buildIndex == 1 && Score >= 10)
+        {
+            GameData.Rewards += 1;
+            Debug.Log("Rewards Count: " + GameData.Rewards);
+            return;
+        }
+        Debug.Log("Rewards Count not increased");
+    }
 }

@@ -17,15 +17,13 @@ public class PlayerSpawn : MonoBehaviour
     public void RespawnPlayer()
     {
         GameManager.Instance.Lives--;
+        GameManager.Instance.GameState = GameState.RESPAWN;
+        player.GetComponent<PlayerController>().DisableRB();
         if (GameManager.Instance.Lives <= 0)
         {
-            GameManager.Instance.GameState = GameState.RESPAWN;
-            player.GetComponent<PlayerController>().DisableRB();
             SceneTransitionManager.Instance.LoadScene(2);
             return;
         }
-        GameManager.Instance.GameState = GameState.RESPAWN;
-        player.GetComponent<PlayerController>().DisableRB();
 
         StartCoroutine(TransitionGameState(timeToRespawn));
     }

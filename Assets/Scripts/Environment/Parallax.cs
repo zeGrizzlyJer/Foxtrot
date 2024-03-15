@@ -9,6 +9,7 @@ public class Parallax : MonoBehaviour
     public enum Mode
     {
         TIME,
+        SPEED,
     }
 
     public bool isSprite = false;

@@ -10,7 +10,7 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
     [Header("Components")]
     [SerializeField] private CanvasGroup fadeImg;
     [SerializeField] private float fadeTime = 0.3f;
-
+    [SerializeField] private UIScreen advertPopup; 
     private bool inTransition = false;
 
     public event Action BeforeSceneChange;
@@ -60,6 +60,14 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
         fadeImg.alpha = 1f;
 
         BeforeSceneChange?.Invoke();
+
+        if (GameData.Rewards >= 2 && SceneManager.GetActiveScene().buildIndex == 1 && GameManager.Instance.Score >= 10)
+        {
+            yield return StartCoroutine(StartRewardsPopup());
+            advertPopup.Defocus();
+            UIScreen.playerDecisionMade = false;
+            UIScreen.activeScreen = null;
+        }
         SceneManager.LoadScene(scene);
     }
 
@@ -88,5 +96,13 @@ public class SceneTransitionManager : Singleton<SceneTransitionManager>
             GameManager.Instance.timer = 0;
             DetermineGameState();
         }
+    }
+
+    private IEnumerator StartRewardsPopup()
+    {
+        if (!advertPopup) yield break;
+
+        UIScreen.Focus(advertPopup);
+        yield return new WaitUntil(() => UIScreen.playerDecisionMade);
     }
 }

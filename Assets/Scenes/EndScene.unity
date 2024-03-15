@@ -155,8 +155,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 209665505}
-  - {fileID: 1612417699}
-  - {fileID: 1535388962}
+  - {fileID: 361568167}
   - {fileID: 192721534}
   - {fileID: 778305576}
   - {fileID: 1951416956}
@@ -492,6 +491,70 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 209665504}
   m_CullTransparentMesh: 1
+--- !u!1 &361568166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 361568167}
+  - component: {fileID: 361568168}
+  m_Layer: 5
+  m_Name: Score Displays
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &361568167
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361568166}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1612417699}
+  - {fileID: 1535388962}
+  m_Father: {fileID: 137890215}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 900, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &361568168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361568166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1001 &377062132
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1348,15 +1411,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   menu: {fileID: 1478004214}
+  shop: {fileID: 0}
   scoreTxt: {fileID: 1612417701}
   hiScoreTxt: {fileID: 1535388964}
+  moneyTxt: {fileID: 0}
+  costTxt: {fileID: 0}
   startBtn: {fileID: 192721535}
   settingsBtn: {fileID: 0}
-  backBtn: {fileID: 0}
+  settingsBackBtn: {fileID: 0}
   quitBtn: {fileID: 1951416957}
   resumeBtn: {fileID: 0}
   menuBtn: {fileID: 778305577}
   pauseBtn: {fileID: 0}
+  shopBtn: {fileID: 0}
+  shopBackBtn: {fileID: 0}
+  playerToggleBtn: {fileID: 0}
+  terrainToggleBtn: {fileID: 0}
+  enemyToggleBtn: {fileID: 0}
+  nextShopIconBtn: {fileID: 0}
+  previousShopIconBtn: {fileID: 0}
+  buyBtn: {fileID: 0}
   masterSlider: {fileID: 0}
   musicSlider: {fileID: 0}
   sfxSlider: {fileID: 0}
@@ -1382,6 +1456,7 @@ MonoBehaviour:
   fadeTime: 1
   primaryMenu: {fileID: 137890216}
   settingsMenu: {fileID: 0}
+  fade: 0
 --- !u!114 &1478004215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1439,12 +1514,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 137890215}
+  m_Father: {fileID: 361568167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 770, y: 112}
+  m_SizeDelta: {x: 400, y: 112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1535388963
 MonoBehaviour:
@@ -1595,12 +1670,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 137890215}
+  m_Father: {fileID: 361568167}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 770, y: 112}
+  m_SizeDelta: {x: 250, y: 112}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1612417700
 MonoBehaviour:
@@ -1642,7 +1717,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'SCORE:  '
+  m_text: 'SCORE: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0d5d874345449fa4c8b5d6e4ac5221a4, type: 2}
   m_sharedMaterial: {fileID: -7061720181137700363, guid: 0d5d874345449fa4c8b5d6e4ac5221a4,

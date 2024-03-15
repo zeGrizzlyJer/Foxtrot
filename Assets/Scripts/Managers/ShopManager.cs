@@ -61,6 +61,7 @@ public class ShopManager : MonoBehaviour
             {
                 spriteIndex = value;
             }
+            SetGameDataIndex();
             ChangeIconFromIndex();
             DetermineLockState();
             OnSpriteIndexChange?.Invoke();
@@ -135,6 +136,24 @@ public class ShopManager : MonoBehaviour
                 break;
             case ShopState.ENEMIES:
                 maxIndex = DataManager.Instance.enemyUnlockData.Count - 1;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void SetGameDataIndex()
+    {
+        switch (state)
+        {
+            case ShopState.PLAYER:
+                GameData.PlayerIndex = spriteIndex;
+                break;
+            case ShopState.TERRAIN:
+                GameData.TerrainIndex = spriteIndex;
+                break;
+            case ShopState.ENEMIES:
+                GameData.EnemyIndex = spriteIndex;
                 break;
             default:
                 break;

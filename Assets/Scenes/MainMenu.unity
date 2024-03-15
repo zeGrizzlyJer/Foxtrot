@@ -210,7 +210,7 @@ MonoBehaviour:
   costTxt: {fileID: 1625690068}
   startBtn: {fileID: 536466704}
   settingsBtn: {fileID: 1612543107}
-  settingsBackBtn: {fileID: 0}
+  settingsBackBtn: {fileID: 888140745}
   quitBtn: {fileID: 718708607}
   resumeBtn: {fileID: 0}
   menuBtn: {fileID: 0}
@@ -2154,6 +2154,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 765583324}
   m_CullTransparentMesh: 1
+--- !u!114 &888140745 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1527121620209499746, guid: 036493c09cde0b94884ce42ed3e81cdd,
+    type: 3}
+  m_PrefabInstance: {fileID: 2294657495846043757}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &924499388
 GameObject:
   m_ObjectHideFlags: 0
@@ -3119,7 +3131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 1
-  m_ReferencePixelsPerUnit: 100
+  m_ReferencePixelsPerUnit: 16
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
@@ -4166,6 +4178,7 @@ GameObject:
   - component: {fileID: 1752388056}
   - component: {fileID: 1752388055}
   - component: {fileID: 1752388054}
+  - component: {fileID: 1752388057}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -4250,6 +4263,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1752388052}
   m_CullTransparentMesh: 1
+--- !u!114 &1752388057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752388052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0.7169812, g: 0.395016, b: 0.395016, a: 1}
+  m_EffectDistance: {x: 6.25, y: -20}
+  m_UseGraphicAlpha: 1
 --- !u!114 &1856080097 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6512082086482011990, guid: e96d03fa66f52e24595d9f69e6364365,
