@@ -7,10 +7,10 @@ public class PlatformBehaviour : MonoBehaviour
 {
     [SerializeField] private float spawnPoint;
     [SerializeField] private float despawnPoint;
+    public bool IsStarterPlatform = false;
 
     private Rigidbody2D rb;
     private PlatformSpawner spawner;
-    private bool hasSpawnedPlatform = false;
 
     private void Start()
     {
@@ -33,19 +33,6 @@ public class PlatformBehaviour : MonoBehaviour
             default:
                 break;
         }
-        if (gameObject.transform.position.x <= despawnPoint) DespawnPlatform();
-            if (hasSpawnedPlatform) return;
-        if (gameObject.transform.position.x <= spawnPoint) SpawnPlatform();
-    }
-
-    private void SpawnPlatform()
-    {
-        hasSpawnedPlatform = true;
-        spawner.SpawnPlatform();
-    }
-
-    private void DespawnPlatform()
-    {
-        Destroy(gameObject);
+        if (gameObject.transform.position.x <= despawnPoint) spawner.EnlistPlatform(this);
     }
 }

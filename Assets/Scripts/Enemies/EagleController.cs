@@ -52,9 +52,9 @@ public class EagleController : EntityController, IRequireCleanup, ISpawn
     {
         Vector2 direction;
 
-        if (player.transform.position.y > transform.position.y)
+        if (player.transform.position.y >= transform.position.y + 0.1)
             direction = new Vector2(-GameManager.Instance.gameSpeed * horizontalSpeedRate, verticalSpeed);
-        else if (player.transform.position.y < transform.position.y)
+        else if (player.transform.position.y <= transform.position.y - 0.1)
             direction = new Vector2(-GameManager.Instance.gameSpeed * horizontalSpeedRate, -verticalSpeed);
         else
             direction = new Vector2(-GameManager.Instance.gameSpeed * horizontalSpeedRate, 0f);
