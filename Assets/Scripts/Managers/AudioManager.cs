@@ -13,6 +13,10 @@ public class AudioManager : Singleton<AudioManager>
     private Queue<AudioSource> audioPool2D;
     private Queue<AudioSource> audioPool3D;
 
+    [SerializeField] private float audioDelay = 0.3f;
+    private float currentDelay = 0f;
+    private bool isAudioDelayed = false;
+
     private void Start()
     {
         audioPool2D = new Queue<AudioSource>();
@@ -28,6 +32,18 @@ public class AudioManager : Singleton<AudioManager>
         }
     }
 
+    private void Update()
+    {
+        if (!isAudioDelayed) return;
+        if (currentDelay >= audioDelay)
+        {
+            isAudioDelayed = false;
+            currentDelay = 0f;
+            return;
+        }
+        currentDelay += Time.deltaTime;
+    }
+
     private AudioSource Get2DSource()
     {
         AudioSource source = audioPool2D.Dequeue();
@@ -37,6 +53,8 @@ public class AudioManager : Singleton<AudioManager>
 
     public void Play2DSFX(AudioClip clip)
     {
+        if (isAudioDelayed) return;
+        isAudioDelayed = true;
         AudioSource source = Get2DSource();
         source.volume = 1f;
         source.clip = clip;
